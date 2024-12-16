@@ -103,7 +103,7 @@ function Profile() {
           </button>
         </div>
       <div className={styles.header}>
-        <h1>Welcome, {githubUser?.login || 'GitHub User'}!</h1>
+        <h1>Welcome, {githubUser?.login || user?.username}!</h1>
         <div className={styles.filters}>
           <input
             type="text"
