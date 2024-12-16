@@ -1,11 +1,13 @@
 // src/pages/Profile.jsx
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { getUserRepositories } from '../../services/github';
+import { initiateGithubOAuth } from '../../services/githubAuth';
+import { getUserRepositories, getUserRepositoriesWithToken } from '../../services/github';
 import styles from './Profile.module.scss';
 
 function Profile() {
   const { user } = useAuth();
+  const [isGithubConnected, setIsGithubConnected] = useState(false);
   const [repositories, setRepositories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,15 +21,32 @@ function Profile() {
   useEffect(() => {
     const fetchRepositories = async () => {
       try {
-        const repos = await getUserRepositories(user.username);
-        setRepositories(repos);
+        if (localStorage.getItem('github_token')) {
+          const repos = await getUserRepositoriesWithToken();
+          setRepositories(repos);
+        } else {
+          const repos = await getUserRepositories(user.username);
+          setRepositories(repos);
+        }
       } catch (err) {
-        setError('Failed to fetch repositories');
+
+        if (err.response?.status === 401) {
+          localStorage.removeItem('github_token');ch
+          try {
+            const repos = await getUserRepositories(user.username);
+            setRepositories(repos);
+            return;
+          } catch (fallbackErr) {
+            setError('Failed to fetch repositories. Please try connecting with GitHub again.');
+          }
+        } else {
+          setError('Failed to fetch repositories: ' + err.message);
+        }
       } finally {
         setLoading(false);
       }
     };
-
+  
     if (user?.username) {
       fetchRepositories();
     }
@@ -46,6 +65,10 @@ function Profile() {
     });
   };
 
+  const handleGithubConnect = () => {
+    initiateGithubOAuth();
+  };
+
   const filteredRepos = repositories
     .filter(repo => 
       repo.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -57,6 +80,13 @@ function Profile() {
 
   return (
     <div className={styles.container}>
+      <div className={styles.githubConnect}>
+          <h2>Connect your GitHub Account</h2>
+          <p>To view your repositories, you need to connect your GitHub account</p>
+          <button onClick={handleGithubConnect} className={styles.githubButton}>
+            Connect GitHub
+          </button>
+        </div>
       <div className={styles.header}>
         <h1>Welcome, {user.username}!</h1>
         <div className={styles.filters}>

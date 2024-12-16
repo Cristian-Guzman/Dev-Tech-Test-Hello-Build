@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login/Login';
 import SignUp from './pages/SignUp/SignUp';
 import Profile from './pages/Profile/Profile';
+import GithubCallback from './pages/GithubCallback';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -30,6 +31,7 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route path="/callback" element={<GithubCallback />} />
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="*" element={<RedirectRoute />} />
         </Routes>
