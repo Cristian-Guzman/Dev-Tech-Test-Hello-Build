@@ -42,7 +42,7 @@ function SignUp() {
           <input
             type="text"
             name="username"
-            placeholder="Username"
+            placeholder="Username (Github user)"
             value={formData.username}
             onChange={handleChange}
             required

@@ -97,8 +97,7 @@ function Profile() {
   return (
     <div className={styles.container}>
       <div className={styles.githubConnect}>
-          <h2>Connect your GitHub Account</h2>
-          <p>To view your repositories, you need to connect your GitHub account</p>
+          <p>If you don't see your repositories, you need to connect with your github account</p>
           <button onClick={handleGithubConnect} className={styles.githubButton}>
             Connect GitHub
           </button>
