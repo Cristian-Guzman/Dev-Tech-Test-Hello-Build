@@ -11,15 +11,42 @@ export const githubClient = axios.create({
   }
 });
 
-export const getUserRepositories = async () => {
-  try {
-    const response = await githubClient.get('');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching repositories:', error);
-    throw error;
-  }
-};
+export const getUserRepositories = async (username) => {
+    try {
+      const query = {
+        query: `{
+          user(login: "${username}") {
+            repositories(first: 100, orderBy: {field: UPDATED_AT, direction: DESC}) {
+              nodes {
+                id
+                name
+                description
+                url
+                createdAt
+                viewerCanAdminister
+                primaryLanguage {
+                  name
+                  color
+                }
+              }
+            }
+          }
+        }`
+      };
+  
+      const response = await axios.post('https://api.github.com/graphql', query, {
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+          'Content-Type': 'application/json',
+        }
+      });
+  
+      return response.data.data.user.repositories.nodes;
+    } catch (error) {
+      console.error('Error fetching repositories:', error);
+      throw error;
+    }
+  };
 
 export const validateGithubUser = async (username) => {
     try {

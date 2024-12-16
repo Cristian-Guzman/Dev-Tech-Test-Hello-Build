@@ -19,7 +19,7 @@ function Profile() {
   useEffect(() => {
     const fetchRepositories = async () => {
       try {
-        const repos = await getUserRepositories();
+        const repos = await getUserRepositories(user.username);
         setRepositories(repos);
       } catch (err) {
         setError('Failed to fetch repositories');
@@ -28,8 +28,10 @@ function Profile() {
       }
     };
 
-    fetchRepositories();
-  }, []);
+    if (user?.username) {
+      fetchRepositories();
+    }
+  }, [user?.username]);
 
   useEffect(() => {
     localStorage.setItem('favoriteRepos', JSON.stringify(favorites));
