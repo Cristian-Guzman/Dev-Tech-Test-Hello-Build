@@ -1,57 +1,106 @@
 // src/pages/Profile.module.scss
 .container {
-    padding: 20px 40px;
     max-width: 1200px;
     margin: 0 auto;
+    padding: 32px 24px;
   }
   
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
-    
+    margin-bottom: 32px;
+    gap: 24px;
+    flex-wrap: wrap;
+  
     h1 {
-      font-size: 24px;
-      font-weight: bold;
+      font-size: 28px;
+      font-weight: 600;
+      color: #0f172a;
     }
   }
   
+  .filters {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  
   .searchBar {
-    padding: 8px 12px;
     width: 300px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
     font-size: 14px;
+    transition: all 0.2s;
+    background: white;
+  
+    &:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
   
     &::placeholder {
-      color: #999;
+      color: #94a3b8;
+    }
+  }
+  
+  .filterButton {
+    padding: 12px 20px;
+    border: 1px solid #3b82f6;
+    border-radius: 8px;
+    background: white;
+    color: #3b82f6;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  
+    &:hover {
+      background: #eff6ff;
+    }
+  
+    &.active {
+      background: #3b82f6;
+      color: white;
+  
+      &:hover {
+        background: #2563eb;
+      }
     }
   }
   
   .repositories {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
   }
   
   .repo {
-    border: 1px solid #e1e1e1;
-    border-radius: 8px;
-    padding: 20px;
     background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.2s;
+    height: 100%;
+  
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
   
     h3 {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 600;
+      color: #0f172a;
       margin-bottom: 8px;
     }
   
     p {
-      color: #666;
+      color: #64748b;
       font-size: 14px;
-      margin-bottom: 15px;
-      min-height: 20px;
+      margin-bottom: 16px;
+      min-height: 40px;
     }
   }
   
@@ -59,13 +108,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: auto;
   }
   
   .viewButton {
-    color: #0366d6;
+    color: #3b82f6;
     text-decoration: none;
     font-size: 14px;
-  
+    font-weight: 500;
+    
     &:hover {
       text-decoration: underline;
     }
@@ -74,15 +125,52 @@
   .starButton {
     background: transparent;
     border: none;
-    color: #0366d6;
+    color: #94a3b8;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 24px;
     padding: 4px;
-    
+    transition: transform 0.2s;
+  
     &:hover {
-      color: #0056b3;
+      transform: scale(1.1);
     }
+  
     &.starred {
-        color: #f1c40f; // Gold color for starred repositories
-      }
+      color: #eab308;
+    }
+  }
+  
+  // Add loading skeleton styles
+  .skeleton {
+    background: #e2e8f0;
+    border-radius: 8px;
+    animation: pulse 1.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+    }
+  
+    .filters {
+      flex-direction: column;
+    }
+  
+    .searchBar {
+      width: 100%;
+    }
   }
