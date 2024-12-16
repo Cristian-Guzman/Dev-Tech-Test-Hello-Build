@@ -1,11 +1,13 @@
 // src/pages/Profile.jsx
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { getUserRepositories } from '../../services/github';
+import { initiateGithubOAuth } from '../../services/githubAuth';
+import { getAuthenticatedUserInfo, getUserRepositories, getUserRepositoriesWithToken } from '../../services/github';
 import styles from './Profile.module.scss';
 
 function Profile() {
   const { user } = useAuth();
+  const [githubUser, setGithubUser] = useState(false);
   const [repositories, setRepositories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,15 +21,32 @@ function Profile() {
   useEffect(() => {
     const fetchRepositories = async () => {
       try {
-        const repos = await getUserRepositories(user.username);
-        setRepositories(repos);
+        if (localStorage.getItem('github_token')) {
+          const repos = await getUserRepositoriesWithToken();
+          setRepositories(repos);
+        } else {
+          const repos = await getUserRepositories(user.username);
+          setRepositories(repos);
+        }
       } catch (err) {
-        setError('Failed to fetch repositories');
+
+        if (err.response?.status === 401) {
+          localStorage.removeItem('github_token');
+          try {
+            const repos = await getUserRepositories(user.username);
+            setRepositories(repos);
+            return;
+          } catch (fallbackErr) {
+            setError('Failed to fetch repositories. Please try connecting with GitHub again.');
+          }
+        } else {
+          setError('Failed to fetch repositories: ' + err.message);
+        }
       } finally {
         setLoading(false);
       }
     };
-
+  
     if (user?.username) {
       fetchRepositories();
     }
@@ -37,6 +56,22 @@ function Profile() {
     localStorage.setItem('favoriteRepos', JSON.stringify(favorites));
   }, [favorites]);
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userInfo = await getAuthenticatedUserInfo();
+        setGithubUser(userInfo);
+      } catch (err) {
+        console.error('Error fetching user info:', err);
+      }
+    };
+
+    if (localStorage.getItem('github_token')) {
+      fetchUserData();
+    }
+  }, []);
+
+
   const toggleFavorite = (repoId) => {
     setFavorites(prevFavorites => {
       if (prevFavorites.includes(repoId)) {
@@ -44,6 +79,10 @@ function Profile() {
       }
       return [...prevFavorites, repoId];
     });
+  };
+
+  const handleGithubConnect = () => {
+    initiateGithubOAuth();
   };
 
   const filteredRepos = repositories
@@ -57,8 +96,14 @@ function Profile() {
 
   return (
     <div className={styles.container}>
+      <div className={styles.githubConnect}>
+          <p>If you don't see your repositories, you need to connect with your github account</p>
+          <button onClick={handleGithubConnect} className={styles.githubButton}>
+            Connect GitHub
+          </button>
+        </div>
       <div className={styles.header}>
-        <h1>Welcome, {user.username}!</h1>
+        <h1>Welcome, {githubUser?.login || 'GitHub User'}!</h1>
         <div className={styles.filters}>
           <input
             type="text"
