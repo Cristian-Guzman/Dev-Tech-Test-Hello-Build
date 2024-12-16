@@ -10,6 +10,11 @@ const ProtectedRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
+const RedirectRoute = () => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <Navigate to="/profile" /> : <Navigate to="/login" />;
+};
+
 function App() {
   return (
     <AuthProvider>
@@ -26,10 +31,11 @@ function App() {
             } 
           />
           <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="*" element={<RedirectRoute />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
   );
 }
 
-export default App
+export default App;

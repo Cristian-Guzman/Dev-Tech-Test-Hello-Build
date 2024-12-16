@@ -1,9 +1,8 @@
 // src/services/github.js
 import axios from 'axios';
 
-const GITHUB_API = 'https://api.github.com/user/repos'; // This is the correct REST API endpoint
+const GITHUB_API = 'https://api.github.com/user/repos'; 
 
-console.log(import.meta.env.VITE_GITHUB_TOKEN);
 export const githubClient = axios.create({
   baseURL: GITHUB_API,
   headers: {
@@ -21,3 +20,12 @@ export const getUserRepositories = async () => {
     throw error;
   }
 };
+
+export const validateGithubUser = async (username) => {
+    try {
+      const response = await axios.get(`https://api.github.com/users/${username}`);
+      return response.status === 200;
+    } catch (error) {
+      return false;
+    }
+  };
