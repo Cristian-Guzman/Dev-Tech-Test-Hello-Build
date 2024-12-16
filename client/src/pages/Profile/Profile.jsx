@@ -2,12 +2,12 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { initiateGithubOAuth } from '../../services/githubAuth';
-import { getUserRepositories, getUserRepositoriesWithToken } from '../../services/github';
+import { getAuthenticatedUserInfo, getUserRepositories, getUserRepositoriesWithToken } from '../../services/github';
 import styles from './Profile.module.scss';
 
 function Profile() {
   const { user } = useAuth();
-  const [isGithubConnected, setIsGithubConnected] = useState(false);
+  const [githubUser, setGithubUser] = useState(false);
   const [repositories, setRepositories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,7 +31,7 @@ function Profile() {
       } catch (err) {
 
         if (err.response?.status === 401) {
-          localStorage.removeItem('github_token');ch
+          localStorage.removeItem('github_token');
           try {
             const repos = await getUserRepositories(user.username);
             setRepositories(repos);
@@ -55,6 +55,22 @@ function Profile() {
   useEffect(() => {
     localStorage.setItem('favoriteRepos', JSON.stringify(favorites));
   }, [favorites]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userInfo = await getAuthenticatedUserInfo();
+        setGithubUser(userInfo);
+      } catch (err) {
+        console.error('Error fetching user info:', err);
+      }
+    };
+
+    if (localStorage.getItem('github_token')) {
+      fetchUserData();
+    }
+  }, []);
+
 
   const toggleFavorite = (repoId) => {
     setFavorites(prevFavorites => {
@@ -88,7 +104,7 @@ function Profile() {
           </button>
         </div>
       <div className={styles.header}>
-        <h1>Welcome, {user.username}!</h1>
+        <h1>Welcome, {githubUser?.login || 'GitHub User'}!</h1>
         <div className={styles.filters}>
           <input
             type="text"

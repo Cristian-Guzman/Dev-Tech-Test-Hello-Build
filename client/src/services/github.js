@@ -51,6 +51,64 @@ export const getUserRepositoriesWithToken = async () => {
   }
 };
 
+export const getAuthenticatedUserInfo = async () => {
+    const token = localStorage.getItem('github_token');
+    if (!token) throw new Error('No GitHub token found');
+  
+    try {
+      const query = {
+        query: `
+          query { 
+            viewer { 
+              login
+              name
+            }
+          }
+        `
+      };
+  
+      const response = await axios.post('https://api.github.com/graphql', query, {
+        headers: {
+          'Authorization': `token ${token}`,
+          'Content-Type': 'application/json',
+        }
+      });
+  
+      return response.data.data.viewer;
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+      throw error;
+    }
+  };
+
+export const getGithubUserInfo = async (token) => {
+    try {
+      const query = {
+        query: `
+          query { 
+            viewer { 
+              login
+              name
+              email
+            }
+          }
+        `
+      };
+  
+      const response = await axios.post('https://api.github.com/graphql', query, {
+        headers: {
+          'Authorization': `token ${token}`,
+          'Content-Type': 'application/json',
+        }
+      });
+  
+      return response.data.data.viewer;
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+      throw error;
+    }
+  };
+
 export const getUserRepositories = async (username) => {
   try {
     const response = await axios.get(`https://api.github.com/users/${username}/repos`);
