@@ -11,11 +11,11 @@ npm install
  ```.env
 # GitHub OAuth and API Configuration
 Just for development purposes, you can use the following values:
-VITE_GITHUB_CLIENT_ID=your_github_oauth_app_client_id
-VITE_GITHUB_TOKEN=your_github_personal_access_token
+VITE_GITHUB_TOKEN=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
+VITE_GITHUB_CLIENT_ID=Ov23liI30p7uF1JSVfAa
 VITE_REDIRECT_URI=http://localhost:5173/callback
 ` ````
-4. To obtain these values:
+4. Otherwise you can go and obtain these values:
    - Create a GitHub OAuth App:
      1. Go to GitHub Settings > Developer Settings > OAuth Apps > New OAuth App
      2. Set Homepage URL to your deployed app URL or http://localhost:5173
