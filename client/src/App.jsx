@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login/Login';
 import SignUp from './pages/SignUp/SignUp';
-import Profile from './pages/Profile';
+import Profile from './pages/Profile/Profile';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();

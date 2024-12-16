@@ -6,6 +6,7 @@ import styles from './Login.module.scss';
 
 function Login() {
   const navigate = useNavigate();
+  // console.log(import.meta.env.VITE_GITHUB_TOKEN)
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
